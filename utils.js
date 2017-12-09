@@ -1,4 +1,6 @@
 
+
+
 var Utils = (function()
 {
     console.log("Created utils");
@@ -13,11 +15,11 @@ var Utils = (function()
 		function() 
 		{
 		    data = reader.result;
-		    console.log(data);
 		}, false);
 	    if (fname) {
 		reader.readAsDataURL(fname);
 	    }
+	    return data;
 	},
 	"test" : function() { console.log("OK"); }
 	

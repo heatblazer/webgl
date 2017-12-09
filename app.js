@@ -22,7 +22,6 @@ var App = function(id)
 	    }
     })();
     
-    
     var renderer = new Renderer(gl);
 
     return {
