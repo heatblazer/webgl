@@ -10,18 +10,30 @@ loadJs("shaderdb.js");
 
 
 
-var VBO = function(glRef, data)
+var VBO = function(glRef, data, location)
 {
     var buffer = glRef.createBuffer();
-    glRef.bindBuffe(glRef.ARRAY_BUFFER, buffer);
+    glRef.bindBuffer(glRef.ARRAY_BUFFER, buffer);
     glRef.bufferData(glRef.ARRAY_BUFFER, new Float32Array(data),
-	gl.STATIC_DRAW);
-    
+	glRef.STATIC_DRAW);
     return {
 	"id" : function() { return buffer; }
     };
 }
 
+
+var VAO = function(gl) 
+{
+    var _gl = gl;
+    return {
+	"setup" : function(vbo, stride, location)
+	{
+	    _gl.enableVertexAttribArray(location);
+	    _gl.bindBuffer(_gl.ARRAY_BUFFER, vbo);
+	    _gl.vertexAttribPointer(location, stride, _gl.FLOAT, false, 0, 0);
+	}
+    };
+}
 
 var Shader = function(gl, type, src)
 {
@@ -44,8 +56,29 @@ var Shader = function(gl, type, src)
     }
     
     return {
-	"id" : function() { return  this.id; }
+	"id" : function() { return  id; }
     }
+}
+
+var GLProgram = function(gl, vs, ps)
+{
+    if (vs === null || ps === null) {
+	return false;
+    }
+    
+    var id = gl.createProgram();
+    gl.attachShader(id, vs); 
+    gl.attachShader(id, ps);
+    gl.linkProgram(id);
+    
+    if (!gl.getProgramParameter(id, gl.LINK_STATUS)) {
+	console.log(gl.getProgramInfoLog(id));
+	//throw new Error(gl.getProgramInfoLog(id));
+    }
+    
+    return {
+	"id" : function() { return id; }
+    };
 }
 
 
@@ -56,16 +89,44 @@ var Renderer = function(refGl)
     
     function testDraw()
     {
-	Utils.test();
-	console.log(shaders["color1"]);
+	
+	var vtxdata = [0.0, 0.5, 
+			0.5, -0.5, 
+			-0.5, -0.5];
+
+	var vbo = new VBO(GL, vtxdata);
+	
+	
+	
 	var ps = new Shader(GL, GL.FRAGMENT_SHADER, shaders["color1"]);
 	if (ps) {
 	    console.log("OK - fragment shader");
+	} else {
+	    return false;
 	}
+	
 	var vs = new Shader(GL, GL.VERTEX_SHADER, shaders["vertex1"]);
 	if (vs) {
 	    console.log("OK - vertex shader");
+	} else {
+	    return false;
 	}
+	
+	var program = null;
+	if ((program = new GLProgram(GL, vs.id(), ps.id())) != true) {
+	    console.log("OK - PROGRAM");
+	} else {
+	    console.log("FAIL - PROGRAM");
+	    return false;
+	}
+	
+	GL.useProgram(program.id());
+	
+	var vao = new VAO(GL);
+	
+	vao.setup(vbo.id(), 2, GL.getAttribLocation(program.id(), "coordinates"));
+	
+	GL.drawArrays(GL.TRIANGLES, 0, 3);	
     }
     
     
@@ -76,6 +137,8 @@ var Renderer = function(refGl)
 	},
 	"clear" : function(r, g, b, a) 
 	{
+	    GL.clearColor(r, g, b, a);
+	    GL.clear(GL.COLOR_BUFFER_BIT);
 	}
     };
 }
