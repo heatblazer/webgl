@@ -3,7 +3,7 @@ function loadJs(uri) {
     var s = document.createElement("script");
     s.src = uri;
     document.head.appendChild(s);
-} 
+}
 
 loadJs("renderer.js");
 loadJs("worker.js");
@@ -13,7 +13,7 @@ var App = function(id)
 {
     var gl = null;
     var canvas = null;
-    
+
     (function() {
 	var canvas = document.getElementById(id);
 	    try {
@@ -22,16 +22,20 @@ var App = function(id)
 		throw new Error("No WebGL support");
 	    }
     })();
-    
+    var width = document.getElementById(id).width;
+    var height = document.getElementById(id).height;
+    var this_app = this;
     var renderer = new Renderer(gl);
 
     return {
-	"start": function() 
-	{  
-	    console.log("started app");
-	    renderer.clear();
-	    renderer.draw();
-	},
+      	"start": function()
+      	{
+            renderer.clear();
+            //renderer.depthTest(true);
+      	    renderer.draw();
+            renderer.viewport(0, 0, this_app.width, this_app.height);
+      	    
+	      },
     };
 };
 
