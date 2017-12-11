@@ -1,9 +1,8 @@
-
-
+// utilites 
 var Utils = (function()
 {
     console.log("Created utils");
-    
+
     return {
          "Face": function(vertices) {
             this.vertices = vertices || []
@@ -12,9 +11,9 @@ var Utils = (function()
 	    {
 	        var data;
 	        var reader = new FileReader();
-	    
-	        reader.addEventListener("load", 
-		    function() 
+
+	        reader.addEventListener("load",
+		    function()
 		    {
 		        data = reader.result;
 		    }, false);
