@@ -7,6 +7,7 @@ function loadJs(uri) {
 
 loadJs("renderer.js");
 loadJs("worker.js");
+loadJs("utils.js");
 
 var App = function(id)
 {
@@ -39,6 +40,10 @@ window.onload = function(e)
 {
     var a = new App("screen");
     a.start("screen");
-    var w= new Worker(null, null);
-    w.start();
+    console.log(Utils.Vector3(0.0, 0.5, 0.0).data());
+    console.log(Utils.Vector3(0.5, -0.5, 0.0).data());
+    console.log(Utils.Vector3(-0.5, -0.5, 0.0).data());
+
+//    var w= new Worker(null, null);
+//    w.start();
 }
