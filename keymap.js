@@ -12,6 +12,9 @@ var KeyMap = (function()
            delete keys[key];
            keys[key] = null;
         }
+      },
+      "pressed" : function(key) {
+        return (keys[key] !== null) ? keys[key] : false;
       }
     }
 })(/*instance*/);
