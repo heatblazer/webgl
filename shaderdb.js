@@ -1,3 +1,4 @@
+/* shaders database */
 var shaders = [];
 
 shaders["color1"] = "void main(void) {" +
