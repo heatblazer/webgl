@@ -4,7 +4,7 @@ function loadJs(uri) {
     s.src = uri;
     document.head.appendChild(s);
 }
-
+loadJs("shaderdb.js");
 loadJs("renderer.js");
 loadJs("worker.js");
 loadJs("utils.js");
@@ -23,7 +23,7 @@ var App = function(id)
 	         }
      })();
 
-     
+
 
     var width = document.getElementById(id).width;
     var height = document.getElementById(id).height;
