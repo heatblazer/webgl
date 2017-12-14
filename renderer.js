@@ -1,8 +1,3 @@
-function loadJs(uri) {
-    var s = document.createElement("script");
-    s.src = uri;
-    document.head.appendChild(s);
-}
 
 loadJs("utils.js");
 loadJs("worker.js");
@@ -36,7 +31,7 @@ var VAO = function(gl)
     return {
 	     "setup" : function(vbo, stride, location)
         	{
-        	    _gl.enableVertexAttribArray(location);
+        	   // _gl.enableVertexAttribArray(location);
         	    _gl.bindBuffer(_gl.ARRAY_BUFFER, vbo);
         	    _gl.vertexAttribPointer(location, stride, _gl.FLOAT, false, 0, 0);
         	}
@@ -97,10 +92,11 @@ var Renderer = function(refGl)
     /**
     * test renderidng function
     */
+    var this_object = this;
 
     return {
-      "setMatrixUnifomrs4" : function(location, mat4x4) {
-          GL.uniformMatrix4f(location, false, mat4x4);
+      "setMatUniforms" : function(location, mat4) {
+          GL.uniformMatrix4fv(location, false, mat4);
       },
       "viewport" : function(x, y, w, h)
       {
@@ -108,7 +104,52 @@ var Renderer = function(refGl)
       },
     	"draw": function()
     	{
-    	    testDraw();
+        var vtxdata = [
+                  0.0, 0.5, 0.0,
+                   0.5, -0.5, 0.0,
+                  -0.5, -0.5, 0.0];
+
+        var mVMatrix = mat4.create();
+        var pMVatrix = mat4.create();
+
+
+        var vtxvbo = new VBO(GL, vtxdata, 3, 3);
+
+        var ps = new Shader(GL, GL.FRAGMENT_SHADER, shaders["color1"]);
+
+        if (ps) {
+            console.log("OK - fragment shader");
+        } else {
+            return false;
+        }
+        var vs = new Shader(GL, GL.VERTEX_SHADER, shaders["vertex1"]);
+
+        if (vs) {
+            console.log("OK - vertex shader");
+        } else {
+            return false;
+        }
+
+        var program = null;
+        try {
+          program = new GLProgram(GL, vs.id(), ps.id());
+        } catch (ex) {
+          console.log(ex);
+        }
+
+        console.log("OK GLProgram")
+
+        GL.useProgram(program.id());
+        var vao = new VAO(GL);
+
+        //mat4.perspective(45, 640/480, 0.1, 100.0, pMVatrix);
+        //mat4.identity(mVMatrix);
+        //mat4.translate(mVMatrix, [-1.5, 0.0, -7.0]);
+
+        // sttup vertex aray buffer here
+        vao.setup(vtxvbo.id(), vtxvbo.itemSize(),
+                  GL.getAttribLocation(program.id(), "aVertexPosition"));
+        GL.drawArrays(GL.TRIANGLES, 0, 3);
     	},
     	"clear" : function(r, g, b, a)
     	{
@@ -123,65 +164,20 @@ var Renderer = function(refGl)
 }
 
 
-function testDraw(Render, GL)
+function testDraw(Rndr, GL)
 {
 
+
   // test data
-  var vtxdata = [
-            0.0, 0.5, 0.0,
-             0.5, -0.5, 0.0,
-            -0.5, -0.5, 0.0];
-
-  var vtxcolor = [
-    1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0
-  ];
-
-  var mVMatrix = mat4.create();
-  var pMVatrix = mat4.create();
 
 
-  var vtxvbo = new VBO(GL, vtxdata, 3, 3);
-  var colorvbo = new VBO(GL, vtxcolor, 3, 4);
-
-  var ps = new Shader(GL, GL.FRAGMENT_SHADER, shaders["color1"]);
-
-  if (ps) {
-      console.log("OK - fragment shader");
-  } else {
-      return false;
-  }
-
-  var vs = new Shader(GL, GL.VERTEX_SHADER, shaders["vertex1"]);
-  if (vs) {
-      console.log("OK - vertex shader");
-  } else {
-      return false;
-  }
-
-  var program = null;
-  if ((program = new GLProgram(GL, vs.id(), ps.id())) != true) {
-      console.log("OK - PROGRAM");
-  } else {
-      console.log("FAIL - PROGRAM");
-      return false;
-  }
-  GL.useProgram(program.id());
-  var vao = new VAO(GL);
-
-  // sttup vertex aray buffer here
-  vao.setup(vtxvbo.id(), vtxvbo.itemSize(),
-        GL.getAttribLocation(program.id(), "aVertexPosition"));
   // location matrix
-  var mvmloc = GL.getUniformLocation(program.id(), "uMVMatrix");
+  //var mvmloc = GL.getUniformLocation(program.id(), "uMVMatrix");
 
   // model view projection matri
-  var mvploc = GL.getUniformLocation(program.id(), "uPMatrix");
+  //var mvploc = GL.getUniformLocation(program.id(), "uPMatrix");
 
+  //Rndr.setMatUniforms(mvmloc, mVMatrix);
+  //Rndr.setMatUniforms(mvploc, pMVatrix);
 
-  Render.setMatrixUnifomrs4(mvmloc, mVMatrix);
-  Render.setMatrixUnifomrs4(mvploc, pMVatrix);
-  
-  GL.drawArrays(GL.TRIANGLES, 0, 3);
 }

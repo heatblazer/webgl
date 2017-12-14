@@ -4,6 +4,7 @@ function loadJs(uri) {
     s.src = uri;
     document.head.appendChild(s);
 }
+
 loadJs("shaderdb.js");
 loadJs("renderer.js");
 loadJs("worker.js");
@@ -31,15 +32,15 @@ var App = function(id)
     var renderer = new Renderer(gl);
 
 
-
     return {
       	"start": function()
       	{
-            renderer.viewport(0, 0, this_app.width, this_app.height);
+            //renderer.viewport(0, 0, this_app.width, this_app.height);
             renderer.clear();
-
             //renderer.depthTest(true);
-      	    renderer.draw();
+            testDraw(renderer, gl);
+            renderer.draw();
+
 	      },
     };
 };
@@ -49,7 +50,4 @@ window.onload = function(e)
 {
     var a = new App("screen");
     a.start("screen");
-
-//    var w= new Worker(null, null);
-//    w.start();
 }
