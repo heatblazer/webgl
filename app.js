@@ -16,7 +16,7 @@ var App = function(id)
     var canvas = null;
 
     (function() {
-      	var canvas = document.getElementById(id);
+      	    canvas = document.getElementById(id);
       	    try {
       		      gl = canvas.getContext("experimental-webgl");
       	    } catch (e) {
@@ -25,23 +25,20 @@ var App = function(id)
      })();
 
 
-
-    var width = document.getElementById(id).width;
-    var height = document.getElementById(id).height;
+    var width = canvas.width;
+    var height = canvas.height;
     var this_app = this;
     var renderer = new Renderer(gl);
-
+    console.log("Width: ("+width+")\t Height: ("+height+")");
 
     return {
       	"start": function()
       	{
-            //renderer.viewport(0, 0, this_app.width, this_app.height);
-            renderer.clear();
+            renderer.viewport(0, 0, this_app.width, this_app.height);
+            renderer.clear(0.0, 1.0, 0.0, 1.0);            
             //renderer.depthTest(true);
-            testDraw(renderer, gl);
             renderer.draw();
-
-	      },
+          },
     };
 };
 
@@ -49,5 +46,10 @@ var App = function(id)
 window.onload = function(e)
 {
     var a = new App("screen");
-    a.start("screen");
+    var renderLoop = new Worker(a, 
+                        function(app) 
+                            { app.start();}, 
+                        100);    
+    renderLoop.start();
+    renderLoop.stop();
 }

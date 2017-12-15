@@ -75,7 +75,7 @@ var Utils = (function()
             var that = this;
             return { "data": function() { return that.data; } };
         },
-        "Vecotr2": function (x, y) {
+        "Vector2": function (x, y) {
             this.x = Number(x) || 0;
             this.y = Number(y) || 0;
             this.data = new Array(x, y);

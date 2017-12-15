@@ -1,31 +1,34 @@
-var Worker = function(userData, cb)
+var Worker = function(userData, cb, speed)
 {
     // myst chech for types... functions, object, etc
     var data = userData; 
     var fun = cb;
-    var isRunning = false;
+	var isRunning = false;
+	var _speed = speed | 0; 
     var loop = function()
     {
-	console.log("loop");
+	if (fun !== null && data !== null) {
+		fun(data); 
+	}
 	if (isRunning)
-	    setTimeout(loop, 100);
+		setTimeout(loop, _speed);
     }
     
     return {
-	"start" : function() 
-	{
-	    if (isRunning) {
-		return;
-	    } else {
-		isRunning = true;
-		loop();
-	    } 
-	},
-	"stop" : function() 
-	{
-	    if (isRunning) {
-		isRunning = false;
-	    } 
-	}
-    }
+		"start" : function() 
+		{
+			if (isRunning) {
+				return;
+			} else {
+				isRunning = true;
+				loop();
+			} 
+		},
+		"stop" : function() 
+		{
+			if (isRunning) {
+				isRunning = false;
+			} 
+		}
+    }; 
 }

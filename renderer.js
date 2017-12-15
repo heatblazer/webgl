@@ -31,7 +31,7 @@ var VAO = function(gl)
     return {
 	     "setup" : function(vbo, stride, location)
         	{
-        	   // _gl.enableVertexAttribArray(location);
+        	    _gl.enableVertexAttribArray(location);
         	    _gl.bindBuffer(_gl.ARRAY_BUFFER, vbo);
         	    _gl.vertexAttribPointer(location, stride, _gl.FLOAT, false, 0, 0);
         	}
@@ -105,9 +105,9 @@ var Renderer = function(refGl)
     	"draw": function()
     	{
         var vtxdata = [
-                  0.0, 0.5, 0.0,
-                   0.5, -0.5, 0.0,
-                  -0.5, -0.5, 0.0];
+            0.0,  1.0,  0.0,
+            -1.0, -1.0,  0.0,
+             1.0, -1.0,  0.0];
 
         var mVMatrix = mat4.create();
         var pMVatrix = mat4.create();
