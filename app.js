@@ -45,11 +45,15 @@ var App = function(id)
 
 window.onload = function(e)
 {
+    var startbutton = document.getElementById('startbutton');
+    var stopbutton = document.getElementById('stopbutton');
+    
+
     var a = new App("screen");
     var renderLoop = new Worker(a, 
                         function(app) 
                             { app.start();}, 
                         100);    
-    renderLoop.start();
-    renderLoop.stop();
+    startbutton.onclick = function(ev) { renderLoop.start(); }
+    stopbutton.onclick =  function(ev) { renderLoop.stop(); }
 }
