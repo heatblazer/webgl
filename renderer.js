@@ -22,18 +22,17 @@ var VBO = function(glRef, data, isize, inums)
 }
 
 
-var VAO = function(gl)
+var VAO = function(gl, location)
 {
-    var _gl = gl;
-    if (_gl === null) {
-      return null;
-    }
+    var loc = location;
+    gl.enableVertexAttribArray(location);
+    
     return {
-	     "setup" : function(vbo, stride, location)
+	     "setup" : function(vbo, size)
         	{
-        	    _gl.enableVertexAttribArray(location);
-        	    _gl.bindBuffer(_gl.ARRAY_BUFFER, vbo);
-        	    _gl.vertexAttribPointer(location, stride, _gl.FLOAT, false, 0, 0);
+        	    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+                gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(loc);
         	}
     };
 }
@@ -43,20 +42,27 @@ var Shader = function(gl, type, src)
     if (gl === null) {
 	     throw new Error("NO GL REFERENCE!!!");
     }
-    var id = 0 | 0;
-    if (type === gl.VERTEX_SHADER) {
-	     id = gl.createShader(gl.VERTEX_SHADER);
-    } else if (type === gl.FRAGMENT_SHADER) {
-	     id = gl.createShader(gl.FRAGMENT_SHADER);
-    } else {
-	     return null;
-    }
+    var id = undefined;
+    switch (type) 
+    {
+        case gl.VERTEX_SHADER:
+            id = gl.createShader(gl.VERTEX_SHADER);
+            break;
+        case gl.FRAGMENT_SHADER:
+            id = gl.createShader(gl.FRAGMENT_SHADER);
+            break;
+        default:
+            throw Error("INVALID SHADER PARAMETER");
+    }    
+    console.log(src);    
     gl.shaderSource(id, src);
     gl.compileShader(id);
 
     if (gl.getShaderParameter(id, gl.COMPILE_STATUS)) {
           	//throw new Error(gl.getShaderInfoLog(id)); // don't thow - it's a warning for not supporting GL_ARB, handle it if needed
 	         console.log(gl.getShaderInfoLog(id));
+    } else {
+        console.log("Shader type: ("+ type + ") - status OK");
     }
 
     return {
@@ -74,14 +80,14 @@ var GLProgram = function(gl, vs, ps)
     gl.attachShader(id, vs);
     gl.attachShader(id, ps);
     gl.linkProgram(id);
-
     if (!gl.getProgramParameter(id, gl.LINK_STATUS)) {
 	       console.log(gl.getProgramInfoLog(id));
 	       throw new Error(gl.getProgramInfoLog(id));
     }
 
     return {
-	     "id" : function() { return id; }
+         "id" : function() { return id; } ,
+         "bind" : function(location, attrib) { gl.bindAttribLocation(id, location, attrib); }
     };
 }
 
@@ -94,90 +100,61 @@ var Renderer = function(refGl)
     */
     var this_object = this;
 
+    if (true) 
+    {
+        var vtxdata = [
+            0.0,  1.0,  0.0,
+            -1.0, -1.0,  0.0,
+            1.0, -1.0,  0.0];
+
+        var vtxvbo = new VBO(GL, vtxdata, 3, 3);
+
+        var  vs = new Shader(GL, GL.VERTEX_SHADER, shaders["vertex1"]);
+        var  ps = new Shader(GL, GL.FRAGMENT_SHADER, shaders["color1"]);        
+        
+        var  program = null;
+
+        try {
+            program = new GLProgram(GL, vs.id(), ps.id());
+        } catch (ex) {
+           // throw new Error(ex); 
+           console.log(ex); 
+        }
+        var  vao = new VAO(GL, 0);
+      
+              //mat4.perspective(45, 640/480, 0.1, 100.0, pMVatrix);
+              //mat4.identity(mVMatrix);
+              //mat4.translate(mVMatrix, [-1.5, 0.0, -7.0]);
+              vao.setup(vtxvbo.id(), 3);   
+              program.bind(0, "aVertexPosition");                     
+  
+              // sttup vertex aray buffer here
+        
+    } else {
+        // 
+    }
+
     return {
       "setMatUniforms" : function(location, mat4) {
           GL.uniformMatrix4fv(location, false, mat4);
       },
       "viewport" : function(x, y, w, h)
       {
-        GL.viewport(x, y, w, h);
+          GL.viewport(x, y, w, h);
       },
     	"draw": function()
-    	{
-        var vtxdata = [
-            0.0,  1.0,  0.0,
-            -1.0, -1.0,  0.0,
-             1.0, -1.0,  0.0];
-
-        var mVMatrix = mat4.create();
-        var pMVatrix = mat4.create();
-
-
-        var vtxvbo = new VBO(GL, vtxdata, 3, 3);
-
-        var ps = new Shader(GL, GL.FRAGMENT_SHADER, shaders["color1"]);
-
-        if (ps) {
-            console.log("OK - fragment shader");
-        } else {
-            return false;
-        }
-        var vs = new Shader(GL, GL.VERTEX_SHADER, shaders["vertex1"]);
-
-        if (vs) {
-            console.log("OK - vertex shader");
-        } else {
-            return false;
-        }
-
-        var program = null;
-        try {
-          program = new GLProgram(GL, vs.id(), ps.id());
-        } catch (ex) {
-          console.log(ex);
-        }
-
-        console.log("OK GLProgram")
-
-        GL.useProgram(program.id());
-        var vao = new VAO(GL);
-
-        //mat4.perspective(45, 640/480, 0.1, 100.0, pMVatrix);
-        //mat4.identity(mVMatrix);
-        //mat4.translate(mVMatrix, [-1.5, 0.0, -7.0]);
-
-        // sttup vertex aray buffer here
-        vao.setup(vtxvbo.id(), vtxvbo.itemSize(),
-                  GL.getAttribLocation(program.id(), "aVertexPosition"));
-        GL.drawArrays(GL.TRIANGLES, 0, 3);
+    	{          
+            GL.useProgram(program.id());
+            GL.drawArrays(GL.TRIANGLES, 0, 3);
     	},
     	"clear" : function(r, g, b, a)
     	{
     	    GL.clearColor(r, g, b, a);
-    	    GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+    	    GL.clear(GL.COLOR_BUFFER_BIT|GL.DEPTH_BUFFER_BIT);
     	},
       "depthTest" : function(ok) {
         if (ok)
-          GL.enable(GL.DEPT_TEST);
+          GL.enable(GL.DEPTH_TEST);
       }
     };
-}
-
-
-function testDraw(Rndr, GL)
-{
-
-
-  // test data
-
-
-  // location matrix
-  //var mvmloc = GL.getUniformLocation(program.id(), "uMVMatrix");
-
-  // model view projection matri
-  //var mvploc = GL.getUniformLocation(program.id(), "uPMatrix");
-
-  //Rndr.setMatUniforms(mvmloc, mVMatrix);
-  //Rndr.setMatUniforms(mvploc, pMVatrix);
-
 }
