@@ -8,6 +8,7 @@ function loadJs(uri) {
 loadJs("defines.js");
 loadJs("utils.js");
 loadJs("worker.js");
+loadJs("framework.js");
 loadJs("shaderdb.js");
 loadJs("renderer.js");
 
@@ -30,7 +31,6 @@ function webglversion(ctx)
 }
 
 
-
 var App = function(id)
 {
     var gl = null;
@@ -49,19 +49,35 @@ var App = function(id)
     var width = canvas.width;
     var height = canvas.height;
     var renderer = new Renderer(gl);
+    var framework = new IZFramework();  // do the logic here 
+
     console.log("Canvas dimensions : Width: ("+width+")\t Height: ("+height+")");
     
     if (DEPTH_TEST_ENABLED) {
         renderer.depthTest(true);
     }
 
+    var drawScene = function() {
+        renderer.viewport(0, 0, width, height);
+        renderer.clear(1.0, 0.0, 0.0, 1.0);            
+        renderer.draw();
+    }
+
+    var updateInputs = function() {
+        /* collect inputs from keyboard */
+    }
+
+    var updateFramework = function() {
+        framework.update(); 
+    }
+
     return {
       	"start": function()
       	{
-            renderer.viewport(0, 0, width, height);
-            renderer.clear(0.0, 0.0, 0.0, 1.0);            
-            renderer.draw();
-          },
+              updateInputs(); 
+              updateFramework();
+              drawScene(); 
+        },
     };
 };
 
@@ -77,7 +93,7 @@ window.onload = function(e)
     var renderLoop = new Worker(a, 
                         function(app) 
                             { app.start();}, 
-                        60);    
+                        30);    
     startbutton.onclick = function(ev) { renderLoop.start(); }
     stopbutton.onclick =  function(ev) { renderLoop.stop(); }
   

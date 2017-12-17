@@ -1,12 +1,11 @@
 // global test data 
-var cubedata = 
-[
-    0.0, 0.5, 0.0,
-    0.0, -0.5, 0.0,
-    -0.5, -0.5, 0.0
+cubedata = [
+    0.0, 100.0, 
+    100.0, 100.0, 
+    -100, 0.0
 ];
 
-var colordata = 
+ colordata = 
 [
     1.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 
@@ -21,7 +20,7 @@ var VBO = function(glRef, data, isize, inums)
     glRef.bindBuffer(glRef.ARRAY_BUFFER, buffer);
     glRef.bufferData(glRef.ARRAY_BUFFER, new Float32Array(data),
 	                   glRef.STATIC_DRAW);
-
+                       
     return {
       	"id" : function() { return buffer; },
         "itemSize" : function() { return _itemSize; },
@@ -39,7 +38,6 @@ var VAO = function(gl)
         	{
         	    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
                 gl.vertexAttribPointer(location, stride, gl.FLOAT, false, 0, 0);
-                gl.enableVertexAttribArray(location); 
         	}
     };
 }
@@ -94,10 +92,11 @@ var GLProgram = function(gl, vs, ps)
 
     return {
          "id" : function() { return id; } ,
-         "bind" : function(location, attribute) {
-             gl.bindAttribLocation(id, location, attribute); 
+         "setupAttrib" : function(location)
+         {
+            gl.enableVertexAttribArray(location); 
          },
-         "useProgram" : function() {
+        "useProgram" : function() {
              gl.useProgram(id); 
          }
     };
@@ -121,18 +120,15 @@ var Renderer = function(refGl)
         var  vao = new VAO(GL);        
         var vtxvbo = new VBO(GL, cubedata, 3, 3);
         var colvbo = new VBO(GL, colordata, 3, 3); 
-        vao.bind(vtxvbo.id(), 0, 3);
-        vao.bind(colvbo.id(), 1, 3);  
-        
         try {
             program = new GLProgram(GL, vs.id(), ps.id());
         } catch (ex) {
            throw new Error(ex);  
         }
-        
-        program.bind(0, "aVertexPosition");
-        program.bind(1, "aVertexColor");
-        
+        program.useProgram();
+        program.setupAttrib(0);
+    
+
     } else {
         throw Error("Not used!");
     }
@@ -146,8 +142,8 @@ var Renderer = function(refGl)
           GL.viewport(x, y, w, h);
       },
     	"draw": function()
-        {       
-            program.useProgram();            
+        {   
+            vao.bind(vtxvbo.id(), 0, 2);
             GL.drawArrays(GL.TRIANGLES, 0, 3);
     	},
     	"clear" : function(r, g, b, a)
