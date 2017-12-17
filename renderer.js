@@ -1,15 +1,23 @@
+// global test data 
+var cubedata = 
+[
+    0.0, 0.5, 0.0,
+    0.0, -0.5, 0.0,
+    -0.5, -0.5, 0.0
+];
 
-loadJs("utils.js");
-loadJs("worker.js");
-loadJs("glMatrix.js");
-
-
+var colordata = 
+[
+    1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 
+    0.0, 0.0, 1.0
+]
 
 var VBO = function(glRef, data, isize, inums)
 {
     var _itemSize = isize;
     var _numItems = inums;
-    var buffer = glRef.createBuffer();
+     buffer = glRef.createBuffer();
     glRef.bindBuffer(glRef.ARRAY_BUFFER, buffer);
     glRef.bufferData(glRef.ARRAY_BUFFER, new Float32Array(data),
 	                   glRef.STATIC_DRAW);
@@ -22,17 +30,16 @@ var VBO = function(glRef, data, isize, inums)
 }
 
 
-var VAO = function(gl, location)
+var VAO = function(gl)
 {
-    var loc = location;
-    gl.enableVertexAttribArray(location);
-    
+    var id = gl.createVertexArray();
+    gl.bindVertexArray(id); 
     return {
-	     "setup" : function(vbo, size)
+	     "bind" : function(vbo, location, stride)
         	{
         	    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-                gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
-                gl.enableVertexAttribArray(loc);
+                gl.vertexAttribPointer(location, stride, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(location); 
         	}
     };
 }
@@ -87,7 +94,12 @@ var GLProgram = function(gl, vs, ps)
 
     return {
          "id" : function() { return id; } ,
-         "bind" : function(location, attrib) { gl.bindAttribLocation(id, location, attrib); }
+         "bind" : function(location, attribute) {
+             gl.bindAttribLocation(id, location, attribute); 
+         },
+         "useProgram" : function() {
+             gl.useProgram(id); 
+         }
     };
 }
 
@@ -102,36 +114,27 @@ var Renderer = function(refGl)
 
     if (true) 
     {
-        var vtxdata = [
-            0.0,  1.0,  0.0,
-            -1.0, -1.0,  0.0,
-            1.0, -1.0,  0.0];
-
-        var vtxvbo = new VBO(GL, vtxdata, 3, 3);
-
         var  vs = new Shader(GL, GL.VERTEX_SHADER, shaders["vertex1"]);
         var  ps = new Shader(GL, GL.FRAGMENT_SHADER, shaders["color1"]);        
-        
         var  program = null;
 
+        var  vao = new VAO(GL);        
+        var vtxvbo = new VBO(GL, cubedata, 3, 3);
+        var colvbo = new VBO(GL, colordata, 3, 3); 
+        vao.bind(vtxvbo.id(), 0, 3);
+        vao.bind(colvbo.id(), 1, 3);  
+        
         try {
             program = new GLProgram(GL, vs.id(), ps.id());
         } catch (ex) {
-           // throw new Error(ex); 
-           console.log(ex); 
+           throw new Error(ex);  
         }
-        var  vao = new VAO(GL, 0);
-      
-              //mat4.perspective(45, 640/480, 0.1, 100.0, pMVatrix);
-              //mat4.identity(mVMatrix);
-              //mat4.translate(mVMatrix, [-1.5, 0.0, -7.0]);
-              vao.setup(vtxvbo.id(), 3);   
-              program.bind(0, "aVertexPosition");                     
-  
-              // sttup vertex aray buffer here
+        
+        program.bind(0, "aVertexPosition");
+        program.bind(1, "aVertexColor");
         
     } else {
-        // 
+        throw Error("Not used!");
     }
 
     return {
@@ -143,8 +146,8 @@ var Renderer = function(refGl)
           GL.viewport(x, y, w, h);
       },
     	"draw": function()
-    	{          
-            GL.useProgram(program.id());
+        {       
+            program.useProgram();            
             GL.drawArrays(GL.TRIANGLES, 0, 3);
     	},
     	"clear" : function(r, g, b, a)
