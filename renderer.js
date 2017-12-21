@@ -1,15 +1,15 @@
 // global test data 
 cubedata = [
-    0.0, 100.0, 
-    100.0, 100.0, 
-    -100, 0.0
+    0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0
 ];
 
  colordata = 
 [
-    1.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 
-    0.0, 0.0, 1.0
+    1.0, 0.1, 0.1,
+    0.1, 1.0, 0.1, 
+    0.1, 0.1, 1.0
 ]
 
 var VBO = function(glRef, data, isize, inums)
@@ -111,6 +111,7 @@ var Renderer = function(refGl)
     */
     var this_object = this;
 
+    // remove afer test
     if (true) 
     {
         var  vs = new Shader(GL, GL.VERTEX_SHADER, shaders["vertex1"]);
@@ -127,7 +128,7 @@ var Renderer = function(refGl)
         }
         program.useProgram();
         program.setupAttrib(0);
-    
+        program.setupAttrib(1);
 
     } else {
         throw Error("Not used!");
@@ -143,7 +144,8 @@ var Renderer = function(refGl)
       },
     	"draw": function()
         {   
-            vao.bind(vtxvbo.id(), 0, 2);
+            vao.bind(vtxvbo.id(), 0, 3);
+            vao.bind(colvbo.id(), 1, 3);
             GL.drawArrays(GL.TRIANGLES, 0, 3);
     	},
     	"clear" : function(r, g, b, a)
