@@ -56,7 +56,7 @@ window.onload = function(e)
     var a = new App("screen");
    // a.start(); 
     
-    /*
+    /* TODO: wait
     var renderLoop = new Worker(a, 
                         function(app) 
                             { app.start();}, 
