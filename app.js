@@ -1,6 +1,5 @@
 /* include directives */
 
-var GL = null;
 
 function loadJs(uri) {
     var s = document.createElement("script");
@@ -13,19 +12,9 @@ loadJs("utils.js");
 loadJs("worker.js");
 loadJs("framework.js");
 loadJs("shaderdb.js");
+loadJs("point.js") // generated file!!!
+loadJs("renderer.js");
 
-
-function setCanvasSize(width, height) {
-    GL.viewport(0, 0, width, height);
-}
-
-function initGL(width, height) {
-	setCanvasSize();
-	console.log(width, height);
-	GL.viewport(0, 0, width, height);
-    GL.clearColor(1, 0, 0, 1);
-    GL.clear(GL.COLOR_BUFFER_BIT);
-}
 
 var App = function(id)
 {
@@ -34,27 +23,29 @@ var App = function(id)
     var self = this;
     (function() {
               canvas = document.getElementById(id);
-                try {
-                    GL = canvas.getContext("webgl2");
-                    console.log("#####Got webgl ctx...")
-                } catch (e) {
-                    throw new Error("No WebGL support");
-                }
+                
      })();
 
     var width = canvas.width;
     var height = canvas.height;
-
+    render = new Renderer(width, height, canvas);
+    render.init();
+    
+    // load data and normalize it
+    var normals = normalize(points);
+    var vertices = render.vbo(normals);
+    var shader_program = render.linkProgram(shaders["vertex2"], shaders["color2"]);
+    render.bindBuffer(vertices);
+    var coordinates = render.location(shader_program, "coordinates");
+    render.attribPtr(coordinates);
 
     return {
         "start" : function() 
-        { 
-            initGL(width, height); 
+        {
+            render.draw();
         },
     };
 }
-
-
 
 
 window.onload = function(e)

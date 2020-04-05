@@ -1,21 +1,13 @@
 
-function readTextFile(file)
-{
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-            {
-                var allText = rawFile.responseText;
-                alert(allText);
-            }
-        }
+function normalize(data) {
+    len = 0;
+    for (var i=0; i < data.length; i++) {
+        len += (data[i] * data[i]);
     }
-    rawFile.send(null);
+    len = Math.sqrt(len);
+
+    for (var j=0; j < data.length; j++) {
+        data[j] = data[j]/len;
+    }
+    return data;
 }
-
-
-
