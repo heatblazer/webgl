@@ -9,5 +9,6 @@ function normalize(data) {
     for (var j=0; j < data.length; j++) {
         data[j] = data[j]/len;
     }
+    
     return data;
 }

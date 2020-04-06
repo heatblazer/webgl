@@ -8,14 +8,16 @@ shaders["color1"] = '\n'+
 'gl_FragColor = vec4(out_color);\n'
 +'}\n';
 
-shaders["color2"] = 'void main(void) {' +
-               ' gl_FragColor = vec4(1.0, 0.0, 0.0, 0.1);' +
+shaders["color2"] = 
+   'void main(void) {\n' +
+               ' gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
             '}';
 
-shaders["vertex2"] =   'attribute vec3 coordinates;' +
+shaders["vertex2"] =   
+'attribute vec3 coordinates;\n' +
 'void main(void) {' +
    ' gl_Position = vec4(coordinates, 1.0);' +
-   'gl_PointSize = 10.0;'+
+   'gl_PointSize = 5.0;'+
 '}';
 
 

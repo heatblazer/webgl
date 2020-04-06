@@ -12,7 +12,7 @@ loadJs("utils.js");
 loadJs("worker.js");
 loadJs("framework.js");
 loadJs("shaderdb.js");
-loadJs("point.js") // generated file!!!
+loadJs("points.js") // generated file!!!
 loadJs("renderer.js");
 
 
@@ -31,18 +31,19 @@ var App = function(id)
     render = new Renderer(width, height, canvas);
     render.init();
     
-    // load data and normalize it
-    var normals = normalize(points);
+    var  normals = points; //normalize(points);
+    
     var vertices = render.vbo(normals);
     var shader_program = render.linkProgram(shaders["vertex2"], shaders["color2"]);
     render.bindBuffer(vertices);
     var coordinates = render.location(shader_program, "coordinates");
+    var color = render.location(shader_program, "color");
     render.attribPtr(coordinates);
-
+     console.log(normalize(points));
     return {
         "start" : function() 
         {
-            render.draw();
+            render.draw(0, points.length/3);
         },
     };
 }

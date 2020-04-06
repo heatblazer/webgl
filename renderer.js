@@ -108,7 +108,7 @@ var Renderer = function(width, height, canvas)
             // Enable the attribute
             GL.enableVertexAttribArray(attrib);
         },
-        "draw" : function() {
+        "draw" : function(from, to) {
             GL.clearColor(0.5, 0.5, 0.5, 0.9);
 
             // Enable the depth test
@@ -121,7 +121,8 @@ var Renderer = function(width, height, canvas)
             GL.viewport(0,0,WIDTH,HEIGHT);
    
             // Draw the triangle
-            GL.drawArrays(GL.POINTS, 0, 10);
+            console.log("FROM "+from+ " TO " + to);
+            GL.drawArrays(GL.POINTS, from, to);
         }
     }
 }
