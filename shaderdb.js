@@ -20,6 +20,20 @@ shaders["vertex2"] =
    'gl_PointSize = 5.0;'+
 '}';
 
+shaders["color3"] = 
+   '\n' + 
+   'void main(void) {\n' +
+               ' gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+            '}';
+
+shaders["vertex3"] = 
+'uniform vec4 uOffset; \n' +   
+'attribute vec3 coordinates;\n' +
+'void main(void) {' +
+   ' gl_Position = vec4(coordinates, 1.0)+uOffset;' +
+   'gl_PointSize = 5.0;'+
+'}';
+
 
 shaders["vertex1"] = '\n' + 
 'attribute highp vec3 aVertexPosition;\n' +

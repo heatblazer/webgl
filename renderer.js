@@ -87,6 +87,7 @@ var Renderer = function(width, height, canvas)
  
 
     return {
+        "gl" : function() { return GL; },
         "init" : function() { initGL(); },
         "clear" :  function(r,g,b,a) { clear(r,g,b,a); },
         "vbo" : function(data) { return vbo(data); },
@@ -100,13 +101,16 @@ var Renderer = function(width, height, canvas)
         "bindBuffer" : function(vertexBuffer) {
             GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
         },
-        "location" : function(program , attrib) {
+        "attribLoc" : function(program , attrib) {
             return GL.getAttribLocation(program, attrib);
         }, 
         "attribPtr" : function(attrib) { //TODO: pass more as args
             GL.vertexAttribPointer(attrib, 3, GL.FLOAT, false, 0, 0);
             // Enable the attribute
             GL.enableVertexAttribArray(attrib);
+        },
+        "uniformLoc" : function(program, uform) {
+            return GL.getUniformLocation(program, uform);
         },
         "draw" : function(from, to) {
             GL.clearColor(0.5, 0.5, 0.5, 0.9);
