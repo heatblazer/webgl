@@ -60,15 +60,18 @@ window.onload = function(e)
     var a = new App("screen");
     a.start();
     /* TODO: wait */
+    var x = 0.1;
     var renderLoop = new Worker(a, 
                         function(app) 
                         { 
                             if (true) {
                             var time = Date.now();
-                            var x = Math.sin(time);
+                            if (Math.abs(x) >= 1.0) x *= -1;
+                            x += 0.1;//Math.sin(time);
+
                             var y = Math.cos(time);
 
-                            a.move(x, y, 0);
+                            a.move(x, 0, 0);
                             a.start();
                             }
                         }, 
