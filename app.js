@@ -60,20 +60,19 @@ window.onload = function(e)
     var a = new App("screen");
     a.start();
     /* TODO: wait */
-    var x = 0.1; 
     var renderLoop = new Worker(a, 
                         function(app) 
                         { 
                             if (true) {
-                            if (x >= 1.0) x = 0.0;
-                            else x+=0.001;
-                            console.log(x);
+                            var time = Date.now();
+                            var x = Math.sin(time);
+                            var y = Math.cos(time);
 
-                            a.move(x, -x, 0);
+                            a.move(x, y, 0);
                             a.start();
                             }
                         }, 
-                        30);   
+                        60);   
                         
     startbutton.onclick = function(ev) 
     { 
