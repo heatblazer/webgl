@@ -38,13 +38,16 @@ var App = function(id)
     render.bindBuffer(vertices);
     var coordinates = render.attribLoc(shader_program, "coordinates");
     var offset = render.uniformLoc(shader_program, "uOffset");    
-//    render.gl().uniform4fv(offset, [1, 0, 0, 0]);
+    render.gl().uniform4fv(offset, [0.0, 0.0, 0.0, 0.0]);
     render.attribPtr(coordinates);
     return {
-        "start" : function() 
-        {
+        "instance" : function() { return this; } ,
+        "start" : function()  {
             render.draw(0, points.length/3);
         },
+        "move" : function(x,y,z) { 
+            render.gl().uniform4fv(offset, [x, y, z, 0]); 
+        }
     };
 }
 
@@ -55,13 +58,20 @@ window.onload = function(e)
     var stopbutton = document.getElementById('stopbutton');
     
     var a = new App("screen");
-    a.start(); 
-    
+    a.start();
     /* TODO: wait */
+    var x = 0.1; 
     var renderLoop = new Worker(a, 
                         function(app) 
                         { 
-                            console.log("test thrader");
+                            if (true) {
+                            if (x >= 1.0) x = 0.0;
+                            else x+=0.001;
+                            console.log(x);
+
+                            a.move(x, -x, 0);
+                            a.start();
+                            }
                         }, 
                         30);   
                         
