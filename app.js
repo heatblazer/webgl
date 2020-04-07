@@ -61,21 +61,21 @@ window.onload = function(e)
     a.start();
     /* TODO: wait */
     var x = 0.1;
+    var y = 0.1;
+    var tf = false;
     var renderLoop = new Worker(a, 
                         function(app) 
                         { 
+                            tf ^= true;
                             if (true) {
                             var time = Date.now();
-                            if (Math.abs(x) >= 1.0) x *= -1;
-                            x += 0.1;//Math.sin(time);
-
-                            var y = Math.cos(time);
-
-                            a.move(x, 0, 0);
+                            if (x >= 1.0) x *= -1;
+                            x += 0.01;//Math.sin(time);
+                            a.move(x,  -x, 0);
                             a.start();
                             }
                         }, 
-                        60);   
+                        30);   
                         
     startbutton.onclick = function(ev) 
     { 
