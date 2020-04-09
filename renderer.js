@@ -119,7 +119,7 @@ var Renderer = function(width, height, canvas)
             GL.enable(GL.DEPTH_TEST);
     
             // Clear the color buffer bit
-            GL.clear(GL.COLOR_BUFFER_BIT);
+            GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
    
             // Set the view port
             GL.viewport(0,0,WIDTH,HEIGHT);

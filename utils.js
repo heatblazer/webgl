@@ -12,3 +12,9 @@ function normalize(data) {
     
     return data;
 }
+
+function spart(x, y, w, h) {
+    console.log("test");
+}
+
+spart(0,0,0,0);
