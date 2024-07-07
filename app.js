@@ -7,13 +7,17 @@ function loadJs(uri) {
     document.head.appendChild(s);
 }
 
+loadJs("miniglm.js");
+loadJs("points.js") // generated file!!!
 loadJs("defines.js");
-loadJs("utils.js");
 loadJs("worker.js");
 loadJs("framework.js");
 loadJs("shaderdb.js");
-loadJs("points.js") // generated file!!!
+loadJs("meshdb.js")
 loadJs("renderer.js");
+loadJs("reelanim.js");
+
+
 
 
 var App = function(id)
@@ -30,23 +34,27 @@ var App = function(id)
     var height = canvas.height;
     render = new Renderer(width, height, canvas);
     render.init();
-     //decide to work w/o normals if not normalized 
-    var  normals = points; //normalize(points);
-    
-    var vertices = render.vbo(normals);
-    var shader_program = render.linkProgram(shaders["vertex3"], shaders["color2"]);
-    render.bindBuffer(vertices);
-    var coordinates = render.attribLoc(shader_program, "coordinates");
-    var offset = render.uniformLoc(shader_program, "uOffset");    
-    render.gl().uniform4fv(offset, [0.0, 0.0, 0.0, 0.0]);
-    render.attribPtr(coordinates);
+    var reels = new Reels(render);    
+    var vertices = reels.vertices();
+    var glm = new MiniGLM();
+    console.log(glm.identity());
+    console.log(glm.rotate('x', 40)());
     return {
         "instance" : function() { return this; } ,
         "start" : function()  {
-            render.draw(0, points.length/3);
+            var i = 0;
+//            render.draw(0, points.length/3);
+            console.log("app start");
+            reels.prep();
+            var proj_mat_data = reels.proj(i++, canvas.width/canvas.height, 1, 100);
+            var projmatloc = reels.pmat();
+            render.uniform4v(projmatloc, false , proj_mat_data);
+            reels.draw();
         },
         "move" : function(x,y,z) { 
-            render.gl().uniform4fv(offset, [x, y, z, 0]); 
+//            render.gl().uniform4fv(offset, [x, y, z, 0]); 
+        },
+        "rotate" : function(theta) {            
         }
     };
 }
@@ -58,7 +66,7 @@ window.onload = function(e)
     var stopbutton = document.getElementById('stopbutton');
     
     var a = new App("screen");
-    a.start();
+//    a.start();
     /* TODO: wait */
     var x = 0.1;
     var y = 0.1;
@@ -66,14 +74,14 @@ window.onload = function(e)
     var renderLoop = new Worker(a, 
                         function(app) 
                         { 
-                            tf ^= true;
-                            if (true) {
-                            var time = Date.now();
-                            if (x >= 1.0) x *= -1;
-                            x += 0.01;//Math.sin(time);
-                            a.move(x,  -x, 0);
+  //                          tf ^= true;
+  //                          if (true) {
+ //                           var time = Date.now();
+ //                           if (x >= 1.0) x *= -1;
+ //                           x += 0.01;//Math.sin(time);
+//                            a.move(x,  -x, 0);
                             a.start();
-                            }
+ //                           }
                         }, 
                         30);   
                         

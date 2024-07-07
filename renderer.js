@@ -1,3 +1,19 @@
+/** 
+
+gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+var position = gl.getAttribLocation(shaderProgram, "position");
+gl.vertexAttribPointer(position, 3, gl.FLOAT, false,0,0) ;
+
+// Position
+gl.enableVertexAttribArray(position);
+gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+var color = gl.getAttribLocation(shaderProgram, "color");
+gl.vertexAttribPointer(color, 3, gl.FLOAT, false,0,0) ;
+
+// Color
+gl.enableVertexAttribArray(color);
+gl.useProgram(shaderProgram);
+*/
 
 var Renderer = function(width, height, canvas)
 {
@@ -12,16 +28,12 @@ var Renderer = function(width, height, canvas)
     function vbo(vertices) {
          // Create an empty buffer object to store the vertex buffer
          var vertex_buffer = GL.createBuffer();
-         
          //Bind appropriate array buffer to it
          GL.bindBuffer(GL.ARRAY_BUFFER, vertex_buffer);
-
          // Pass the vertex data to the buffer
          GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(vertices), GL.STATIC_DRAW);
-
          // Unbind the buffer
-         GL.bindBuffer(GL.ARRAY_BUFFER, null);
-
+//         GL.bindBuffer(GL.ARRAY_BUFFER, null);
          return vertex_buffer;
     }
 
@@ -52,6 +64,8 @@ var Renderer = function(width, height, canvas)
         if (shader_source === null ) {
             return null;
         }
+        console.log("PS: " + shader_source);
+
         var pixel_shader = GL.createShader(GL.FRAGMENT_SHADER);
         GL.shaderSource(pixel_shader, shader_source);
         // Compile the vertex shader
@@ -63,6 +77,7 @@ var Renderer = function(width, height, canvas)
         if (shader_source === null) {
             return null;
         }
+        console.log("VS: " + shader_source);
         var vertex_shader = GL.createShader(GL.VERTEX_SHADER);
         GL.shaderSource(vertex_shader, shader_source);
         // Compile the vertex shader
@@ -81,12 +96,18 @@ var Renderer = function(width, height, canvas)
         // Link both programs
         GL.linkProgram(shaderProgram);
         // Use the combined shader program object
-        GL.useProgram(shaderProgram);
+        var success = GL.getProgramParameter(shaderProgram, GL.LINK_STATUS);
+        if (!success) {
+            console.log(GL.getProgramInfoLog(shaderProgram));
+            GL.deleteProgram(program);
+        }
+//        GL.useProgram(shaderProgram);
         return shaderProgram;
     }
  
 
     return {
+        "hello" : function() { console.log("hello renderer");}, //dbg test fn
         "gl" : function() { return GL; },
         "init" : function() { initGL(); },
         "clear" :  function(r,g,b,a) { clear(r,g,b,a); },
@@ -94,10 +115,11 @@ var Renderer = function(width, height, canvas)
         "vs" : function(ss) { return create_vertex_shader(ss); },
         "ps" : function(ss) { return create_pixel_shader(ss); },
         "linkProgram" : function(vs, ps) {
-            var p = create_pixel_shader(ps);
             var v = create_vertex_shader(vs);
+            var p = create_pixel_shader(ps);
             return create_program(v, p);
         },
+        "useprogram" : function(sprogram) { GL.useProgram(sprogram); },
         "bindBuffer" : function(vertexBuffer) {
             GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
         },
@@ -106,11 +128,13 @@ var Renderer = function(width, height, canvas)
         }, 
         "attribPtr" : function(attrib) { //TODO: pass more as args
             GL.vertexAttribPointer(attrib, 3, GL.FLOAT, false, 0, 0);
-            // Enable the attribute
             GL.enableVertexAttribArray(attrib);
         },
         "uniformLoc" : function(program, uform) {
             return GL.getUniformLocation(program, uform);
+        },
+        "uniform4v" : function(uniformloc, boolstat, data) {
+            GL.uniformMatrix4fv(uniformloc, boolstat, data);
         },
         "draw" : function(from, to) {
             GL.clearColor(0.5, 0.5, 0.5, 0.9);
@@ -125,8 +149,7 @@ var Renderer = function(width, height, canvas)
             GL.viewport(0,0,WIDTH,HEIGHT);
    
             // Draw the triangle
-            console.log("FROM "+from+ " TO " + to);
-            GL.drawArrays(GL.POINTS, from, to);
+            GL.drawArrays(GL.TRIANGLES, from, to);
         }
     }
 }
