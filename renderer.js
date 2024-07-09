@@ -33,10 +33,13 @@ var Renderer = function(width, height, canvas)
          // Pass the vertex data to the buffer
          GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(vertices), GL.STATIC_DRAW);
          // Unbind the buffer
-//         GL.bindBuffer(GL.ARRAY_BUFFER, null);
          return vertex_buffer;
     }
-
+    function vao()
+    {
+        var v = GL.createVertexArray();
+        GL.bindVertexArray(v);
+    }
 
     function initGL() {
 
@@ -99,7 +102,7 @@ var Renderer = function(width, height, canvas)
         var success = GL.getProgramParameter(shaderProgram, GL.LINK_STATUS);
         if (!success) {
             console.log(GL.getProgramInfoLog(shaderProgram));
-            GL.deleteProgram(program);
+            GL.deleteProgram(shaderProgram);
         }
 //        GL.useProgram(shaderProgram);
         return shaderProgram;
@@ -111,7 +114,7 @@ var Renderer = function(width, height, canvas)
         "gl" : function() { return GL; },
         "init" : function() { initGL(); },
         "clear" :  function(r,g,b,a) { clear(r,g,b,a); },
-        "vbo" : function(data) { return vbo(data); },
+        "vbo" : function(data) {  return vbo(data); },
         "vs" : function(ss) { return create_vertex_shader(ss); },
         "ps" : function(ss) { return create_pixel_shader(ss); },
         "linkProgram" : function(vs, ps) {
@@ -126,8 +129,8 @@ var Renderer = function(width, height, canvas)
         "attribLoc" : function(program , attrib) {
             return GL.getAttribLocation(program, attrib);
         }, 
-        "attribPtr" : function(attrib) { //TODO: pass more as args
-            GL.vertexAttribPointer(attrib, 3, GL.FLOAT, false, 0, 0);
+        "attribPtr" : function(attrib, param) { //TODO: pass more as args
+            GL.vertexAttribPointer(attrib, param, GL.FLOAT, false, 0, 0);
             GL.enableVertexAttribArray(attrib);
         },
         "uniformLoc" : function(program, uform) {

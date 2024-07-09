@@ -37,12 +37,10 @@ var App = function(id)
     var reels = new Reels(render);    
     var vertices = reels.vertices();
     var glm = new MiniGLM();
-    console.log(glm.identity());
-    console.log(glm.rotate('x', 40)());
     var deg = 0;
     var i = 0;
-    var x_rot = glm.rotate('x', Date.now())(); 
-
+    var x_rot = glm.rotate('x', 10)(); 
+    var scaler = glm.scale(0.3, 0.3, 0.5);
     return {
         "instance" : function() { return this; } ,
         "start" : function()  {
@@ -63,8 +61,10 @@ var App = function(id)
             //var  = reels.proj(i++, canvas.width/canvas.height, 1, 100);
             var xrot = reels.xrot();
             var yrot = reels.yrot();
+            var s = reels.scale();
             render.uniform4v(xrot, false , x_rot);
             render.uniform4v(yrot, false, y_rot);
+            render.uniform4v(s, false, scaler);
             reels.draw();
         },
         "move" : function(x,y,z) { 
