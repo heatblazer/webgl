@@ -43,8 +43,23 @@ var MiniGLM = function()
                     return sm;                            
                 };
             } else if (axis === 'y' || axis == 'Y') {
-
+                return  function() {
+                    var sm = new Float32Array(16);
+                    sm[0] = Math.cos(theta); sm[1] = 0.0; sm[2] = Math.sin(theta); sm[3] = 0.0;
+                    sm[4] = 0.0; sm[5] = 1.0; sm[6] = 0.0; sm[7] = 0.0;
+                    sm[8] = -Math.sin(theta); sm[9] = 0; sm[10] = Math.cos(theta ); sm[11] = 0.0;
+                    sm[12] = 0.0; sm[13] = 0.0; sm[14] = 0.0; sm[15] = 1.0;
+                    return sm;                            
+                };
             } else if (axis == 'z' || axis == 'Z') {
+                return  function() {
+                    var sm = new Float32Array(16);
+                    sm[0] = Math.cos(theta); sm[1] = -Math.sin(theta); sm[2] = 0.0; sm[3] = 0.0;
+                    sm[4] = Math.sin(theta); sm[5] = Math.cos(theta ); sm[6] = 0.0; sm[7] = 0.0;
+                    sm[8] = 0.0; sm[9] = 0.0; sm[10] = 1.0; sm[11] = 0.0;
+                    sm[12] = 0.0; sm[13] = 0.0; sm[14] = 0.0; sm[15] = 1.0;
+                    return sm;                            
+                };
 
             } else {
                 return function() { console.log("inproper ussage"); return id; };

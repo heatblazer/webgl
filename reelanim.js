@@ -6,14 +6,16 @@
 
 var Reels = function(pReder)
 {
-    var vertices = pReder.vbo(meshdb.example001);
+    var vertices = pReder.vbo(meshdb.untitled.v);
   //  var colors = pReder.vbo(colmap);
     
   
-    var shader_program = pReder.linkProgram(shaders["vertex2"], shaders["color2"]);
+    var shader_program = pReder.linkProgram(shaders["reelrot"], shaders["reelcol"]);
     var pmatrix = render.uniformLoc(shader_program, "pmatrix");
     var mmatrix = render.uniformLoc(shader_program, "mmatrix");
     var vmatrix = render.uniformLoc(shader_program, "vmatrix");
+    var xrot = render.uniformLoc(shader_program, "xrot");
+    var yrot = render.uniformLoc(shader_program, "yrot");
 //    pReder.gl().uniform4fv(coordinates, [0.0, 0.0, 0.0, 0.0]);
     return {
         "vertices" : function () { return vertices; }, 
@@ -24,10 +26,12 @@ var Reels = function(pReder)
             pReder.useprogram(shader_program);
             pReder.attribPtr(posattribloc);
         },
-        "draw" : function() { pReder.draw(0, meshdb.example001.length / 3); }, 
+        "draw" : function() { pReder.draw(0, meshdb.untitled.v.length / 3); }, 
         "pmat" : function() { return pmatrix; }, 
         "mmat" : function() { return mmatrix; }, 
         "vmat": function() { return vmatrix; },
+        "xrot" : function() { return xrot; },
+        "yrot" : function() { return yrot; },
         "proj": function (angle, a, zMin, zMax) {
             var ang = Math.tan((angle*.5)*Math.PI/180);//angle*.5
             return [

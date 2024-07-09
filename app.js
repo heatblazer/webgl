@@ -39,16 +39,32 @@ var App = function(id)
     var glm = new MiniGLM();
     console.log(glm.identity());
     console.log(glm.rotate('x', 40)());
+    var deg = 0;
+    var i = 0;
+    var x_rot = glm.rotate('x', Date.now())(); 
+
     return {
         "instance" : function() { return this; } ,
         "start" : function()  {
-            var i = 0;
+            var y_rot = null;
+//            if (i % 2 === 0 ) {
+       //         rot = glm.rotate('y', deg++ % 180)();
+//            } else if (i % 3 === 0) {
+                y_rot = glm.rotate('y', Date.now())(); //deg++ % 360)();
+//            } else {
+//              rot = glm.rotate('z', deg++ % 180)();
+ //           }
+  //          i++;
+//            console.log("I " + i);
 //            render.draw(0, points.length/3);
-            console.log("app start");
+ //           console.log("app start");
             reels.prep();
-            var proj_mat_data = reels.proj(i++, canvas.width/canvas.height, 1, 100);
-            var projmatloc = reels.pmat();
-            render.uniform4v(projmatloc, false , proj_mat_data);
+//            var scale = glm.scale(-0.1,  -0.1 , 0.5);
+            //var  = reels.proj(i++, canvas.width/canvas.height, 1, 100);
+            var xrot = reels.xrot();
+            var yrot = reels.yrot();
+            render.uniform4v(xrot, false , x_rot);
+            render.uniform4v(yrot, false, y_rot);
             reels.draw();
         },
         "move" : function(x,y,z) { 
@@ -83,7 +99,7 @@ window.onload = function(e)
                             a.start();
  //                           }
                         }, 
-                        30);   
+                        120);   
                         
     startbutton.onclick = function(ev) 
     { 
